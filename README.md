@@ -2,36 +2,40 @@
 **Contributors:** getpantheon, danielbachhuber, mboynes, Outlandish Josh  
 **Tags:** cache, plugin  
 **Requires at least:** 3.0.1  
-**Tested up to:** 4.4  
-**Compatible up to:** 4.1  
-**Stable tag:** 0.2.2  
+**Tested up to:** 4.4.2  
+**Stable tag:** 0.3.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
 Back your WP Object Cache with Redis, a high-performance in-memory storage backend.
 
-[![Build Status](https://travis-ci.org/pantheon-systems/wp-redis.svg?branch=master)](https://travis-ci.org/pantheon-systems/wp-redis)
-
 ## Description ##
+
+[![Build Status](https://travis-ci.org/pantheon-systems/wp-redis.svg?branch=master)](https://travis-ci.org/pantheon-systems/wp-redis)
 
 For sites concerned with high traffic, speed for logged-in users, or dynamic pageloads, a high-speed and persistent object cache is a must. You also need something that can scale across multiple instances of your application, so using local file caches or APC are out.
 
-Redis is a great answer, and one we bundle on the Pantheon platform. This is our plugin for integrating with the cache, but you can use it on any self-hosted WordPress site if you have Redis.
+Redis is a great answer, and one we bundle on the Pantheon platform. This is our plugin for integrating with the cache, but you can use it on any self-hosted WordPress site if you have Redis. Install from [WordPress.org](https://wordpress.org/plugins/wp-redis/) or [Github](https://github.com/pantheon-systems/wp-redis).
 
-Go forth and make awesome!
+Go forth and make awesome! And, once you've built something great, [send us feature requests (or bug reports)](https://github.com/pantheon-systems/wp-redis/issues).
 
 ## Installation ##
 
-This assumes you have a PHP environment with the required Redis library and a working Redis server (e.g. Pantheon).
+This assumes you have a PHP environment with the [required PhpRedis extension](https://github.com/phpredis/phpredis) and a working Redis server (e.g. Pantheon).
 
 1. Install `object-cache.php` to `wp-content/object-cache.php` with a symlink or by copying the file.
 2. If you're not running on Pantheon, edit wp-config.php to add your cache credentials, e.g.:
 
-        $redis_server = array( 'host' => '127.0.0.1',
-                               'port' => 6379,
-                               'auth' => '12345' );
+        $redis_server = array(
+            'host' => '127.0.0.1',
+            'port' => 6379,
+            'auth' => '12345',
+        );
 
 3. Engage thrusters: you are now backing WP's Object Cache with Redis.
+4. (Optional) To use the same Redis server with multiple, discreet WordPress installs, you can use the `WP_CACHE_KEY_SALT` constant to define a unique salt for each install.
+5. (Optional) To use true cache groups, with the ability to delete all keys for a given group, define the `WP_REDIS_USE_CACHE_GROUPS` constant to true. However, when enabled, the expiration value is not respected because expiration on group keys isn't a feature supported by Redis.
+6. (Optional) On an existing site previously using WordPress' transient cache, use WP-CLI to delete all (`%_transient_%`) transients from the options table: `wp transient delete-all`. WP Redis assumes responsibility for the transient cache.
 
 ## Frequently Asked Questions ##
 
@@ -52,6 +56,12 @@ https://github.com/pantheon-systems/wp-redis
 Pull requests and issues are welcome!
 
 ## Changelog ##
+
+### 0.3.0 (February 11, 2016) ###
+
+* Introduces opt-in support for Redis cache groups. Enable with `define( 'WP_REDIS_USE_CACHE_GROUPS', true );`. When enabled, WP Redis persists cache groups in a structured manner, instead of hashing the cache key and group together.
+* Uses PHP_CodeSniffer and [WordPress Coding Standards sniffs](https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards) to ensure WP Redis adheres to WordPress coding standards.
+* Bug fix: Permits use of a Unix socket in `$redis_server['host']` by ensuring the supplied `$port` is null.
 
 ### 0.2.2 (November 24, 2015) ###
 
